@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event Explorer</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f2f2f2;
+            padding: 20px;
+        }
+
+        input, select {
+            padding: 10px;
+            margin: 5px;
+        }
+
+        .events {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            width: 220px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px gray;
+        }
+
+        .card h3 {
+            color: blue;
+        }
+
+        #message {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Event Explorer</h1>
+
+    <!-- Search -->
+    <input type="text" id="search"
+           placeholder="Search events..." oninput="displayEvents()">
+
+    <!-- Category Filter -->
+    <select id="category" onchange="displayEvents()">
+        <option value="All">All Categories</option>
+        <option value="Tech">Tech</option>
+        <option value="Sports">Sports</option>
+        <option value="Music">Music</option>
+    </select>
+
+    <!-- Date Filter -->
+    <input type="date" id="date" onchange="displayEvents()">
+
+    <!-- Sorting -->
+    <select id="sort" onchange="displayEvents()">
+        <option value="asc">Date: Oldest First</option>
+        <option value="desc">Date: Newest First</option>
+    </select>
+
+    <hr>
+
+    <div class="events" id="eventList"></div>
+
+    <p id="message"></p>
+
+    <script>
+
+        // Array of JSON objects
+        let events = [
+            {
+                name: "Coding Hackathon",
+                category: "Tech",
+                date: "2026-11-20",
+                location: "Pune"
+            },
+            {
+                name: "Cricket Tournament",
+                category: "Sports",
+                date: "2026-11-18",
+                location: "Mumbai"
+            },
+            {
+                name: "Music Concert",
+                category: "Music",
+                date: "2026-11-25",
+                location: "Nashik"
+            },
+            {
+                name: "AI Workshop",
+                category: "Tech",
+                date: "2026-11-15",
+                location: "Pune"
+            }
+        ];
+
+        // Display events
+        function displayEvents() {
+
+            let search = document.getElementById("search").value.toLowerCase();
+            let category = document.getElementById("category").value;
+            let date = document.getElementById("date").value;
+            let sort = document.getElementById("sort").value;
+
+            // Keyword search
+            let filtered = events.filter(event =>
+                event.name.toLowerCase().includes(search) ||
+                event.location.toLowerCase().includes(search)
+            );
+
+            // Category filter
+            if (category !== "All") {
+                filtered = filtered.filter(event =>
+                    event.category === category
+                );
+            }
+
+            // Date filter
+            if (date !== "") {
+                filtered = filtered.filter(event =>
+                    event.date === date
+                );
+            }
+
+            // Sorting
+            filtered.sort((a, b) => {
+                if (sort === "asc") {
+                    return new Date(a.date) - new Date(b.date);
+                } else {
+                    return new Date(b.date) - new Date(a.date);
+                }
+            });
+
+            // Display cards
+            let output = "";
+
+            filtered.forEach(event => {
+                output += `
+                    <div class="card">
+                        <h3>${event.name}</h3>
+                        <p>Category: ${event.category}</p>
+                        <p>Date: ${event.date}</p>
+                        <p>Location: ${event.location}</p>
+                    </div>
+                `;
+            });
+
+            document.getElementById("eventList").innerHTML = output;
+
+            // No results handling
+            if (filtered.length === 0) {
+                document.getElementById("message").innerHTML =
+                    "No Results Found!";
+            } else {
+                document.getElementById("message").innerHTML = "";
+            }
+        }
+
+        // Initial display
+        displayEvents();
+
+    </script>
+
+</body>
+</html>
